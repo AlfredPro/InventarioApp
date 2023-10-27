@@ -1,0 +1,64 @@
+﻿@model PaginatedEntity
+
+@if (Model.TotalPages > 0)
+{
+    <ul class="pagination">
+        @if (Model.PageIndex > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-searchForString="@ViewData["searchForString"]"
+                   asp-route-searchByString="@ViewData["searchByString"]"
+                   asp-route-page="@(Model.PageIndex - 1)">Previo</a>
+            </li>
+        }
+        @if (Model.StartPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-searchForString="@ViewData["searchForString"]"
+                   asp-route-searchByString="@ViewData["searchByString"]"
+                   asp-route-page="1">1</a>
+            </li>
+            @if (Model.StartPage > 2)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            }
+        }
+        @for (int i = Model.StartPage; i <= Model.EndPage; i++)
+        {
+            <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                <a class="page-link" asp-action="Index"
+                   asp-route-searchForString="@ViewData["searchForString"]"
+                   asp-route-searchByString="@ViewData["searchByString"]"
+                   asp-route-page="@i">@i</a>
+            </li>
+        }
+        @if (Model.EndPage < Model.TotalPages)
+        {
+            @if (Model.EndPage < Model.TotalPages - 1)
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+            }
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-searchForString="@ViewData["searchForString"]"
+                   asp-route-searchByString="@ViewData["searchByString"]"
+                   asp-route-page="@Model.TotalPages">@Model.TotalPages</a>
+            </li>
+        }
+        @if (Model.PageIndex < Model.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-searchForString="@ViewData["searchForString"]"
+                   asp-route-searchByString="@ViewData["searchByString"]"
+                   asp-route-page="@(Model.PageIndex + 1)">Siguiente</a>
+            </li>
+        }
+    </ul>
+}

@@ -50,8 +50,8 @@ namespace InventarioApp.Controllers
                              Id = u.Id,
                              FirstName = u.FirstName,
                              LastName = u.LastName,
-                             Email = u.Email,
-                             Role = roles.ToList().First().Name
+                             Email = u.Email ?? "",
+                             Role = roles.ToList().First().Name ?? "Noob"
                          });
 
             if (!String.IsNullOrEmpty(searchForString))
@@ -84,12 +84,12 @@ namespace InventarioApp.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.UserManagement == null)
+            if (id == null || _context.Users == null)
             {
                 return NotFound();
             }
 
-            var userManagement = await _context.UserManagement.FindAsync(id);
+            var userManagement = await _context.Users.FindAsync(id);
             if (userManagement == null)
             {
                 return NotFound();
@@ -131,12 +131,12 @@ namespace InventarioApp.Controllers
 
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.UserManagement == null)
+            if (id == null || _context.Users == null)
             {
                 return NotFound();
             }
 
-            var userManagement = await _context.UserManagement
+            var userManagement = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userManagement == null)
             {
@@ -150,14 +150,14 @@ namespace InventarioApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.UserManagement == null)
+            if (_context.Users == null)
             {
                 return Problem("Entity set 'AppDBContext.UserManagement'  is null.");
             }
-            var userManagement = await _context.UserManagement.FindAsync(id);
+            var userManagement = await _context.Users.FindAsync(id);
             if (userManagement != null)
             {
-                _context.UserManagement.Remove(userManagement);
+                _context.Users.Remove(userManagement);
             }
             
             await _context.SaveChangesAsync();
@@ -166,7 +166,7 @@ namespace InventarioApp.Controllers
 
         private bool UserManagementExists(string id)
         {
-          return (_context.UserManagement?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

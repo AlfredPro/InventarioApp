@@ -14,6 +14,7 @@ builder.Services.AddDbContext<AppDBContext>(options => options.UseSqlServer(conn
 builder.Services.AddIdentity<AppUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddDefaultTokenProviders()
     .AddDefaultUI()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDBContext>();
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
@@ -47,5 +48,16 @@ app.MapControllerRoute(
 
 
 app.MapRazorPages();
+
+using(var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = new List<string> { "MafiaBoss", "Worker", "Noob" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole(role));
+    }
+}
 
 app.Run();

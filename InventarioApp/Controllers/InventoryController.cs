@@ -19,7 +19,6 @@ namespace InventarioApp.Controllers
             _context = context;
         }
 
-        // GET: Inventory
         public async Task<IActionResult> Index(string searchForString, string searchByString, int? page)
         {
             if (_context.InventoryEntry == null)
@@ -67,11 +66,13 @@ namespace InventarioApp.Controllers
             }
 
             entries = entries.OrderBy(s => s.Type).ThenBy(s => s.Name);
+
+            if(page != null && page <1) page = 1;
+
             return View(await PaginatedList<InventoryEntry>.CreateAsync(entries.AsNoTracking(), page ?? 1, 10));
                           
         }
 
-        // GET: Inventory/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.InventoryEntry == null)
@@ -89,15 +90,11 @@ namespace InventarioApp.Controllers
             return View(inventoryEntry);
         }
 
-        // GET: Inventory/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Inventory/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Type,Description,Notes,Quantity")] InventoryEntry inventoryEntry)
@@ -111,7 +108,6 @@ namespace InventarioApp.Controllers
             return View(inventoryEntry);
         }
 
-        // GET: Inventory/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.InventoryEntry == null)
@@ -127,9 +123,6 @@ namespace InventarioApp.Controllers
             return View(inventoryEntry);
         }
 
-        // POST: Inventory/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Description,Notes,Quantity")] InventoryEntry inventoryEntry)
@@ -162,7 +155,6 @@ namespace InventarioApp.Controllers
             return View(inventoryEntry);
         }
 
-        // GET: Inventory/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.InventoryEntry == null)
@@ -180,7 +172,6 @@ namespace InventarioApp.Controllers
             return View(inventoryEntry);
         }
 
-        // POST: Inventory/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

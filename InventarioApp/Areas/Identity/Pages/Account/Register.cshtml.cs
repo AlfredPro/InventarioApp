@@ -122,6 +122,25 @@ namespace InventarioApp.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+                    //Assing noob role to new user
+                    var roleResult = await _userManager.AddToRoleAsync(user, "Noob");
+                    if (roleResult.Succeeded)
+                    {
+                        _logger.LogInformation("User assigned to Noob role.");
+                    }
+                    else
+                    {
+                        _logger.LogInformation("User not assigned to Noob role.");
+                        //Cancel user creation
+                        await _userManager.DeleteAsync(user);
+                        foreach (var error in roleResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return Page();
+                    }
+
+
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

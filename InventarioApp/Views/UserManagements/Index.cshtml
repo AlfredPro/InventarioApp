@@ -1,18 +1,15 @@
-﻿@model PaginatedList<InventarioApp.Models.InventoryEntry>
+﻿@model PaginatedList<InventarioApp.Models.UserManagement>
 
 @{
-    ViewData["Title"] = "Inventario";
+    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Inventario</h1>
+<h1>Usuarios</h1>
 
 <div class="row">
-    <div class="col-3">
-        <a class="btn btn-primary btn-sm" asp-action="Create">Nueva Entrada</a>
-    </div>
-    <div class="col-6 offset-3">
-    <form asp-action="Index" method="get">
+    <div class="col-6 offset-6">
+        <form asp-action="Index" method="get">
             <div class="input-group">
                 @Html.DropDownList("SearchByString", ViewBag.Options, "Buscar por...", new {@class="form-select"})
                 <input class="form-control" type="text" name="searchForString" placeholder="Buscar" value="@ViewData["searchForString"]" />
@@ -28,19 +25,16 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model[0].Name)
+                @Html.DisplayNameFor(model => model[0].FirstName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model[0].Type)
+                @Html.DisplayNameFor(model => model[0].LastName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model[0].Description)
+                @Html.DisplayNameFor(model => model[0].Email)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model[0].Notes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model[0].Quantity)
+                @Html.DisplayNameFor(model => model[0].Role)
             </th>
             <th></th>
         </tr>
@@ -49,34 +43,30 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Type)
+                @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Notes)
+                @Html.DisplayFor(modelItem => item.Role)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                <a class="btn btn-primary btn-sm p-2" asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                <a class="btn btn-secondary btn-sm p-2" asp-action="Details" asp-route-id="@item.Id">Detalles</a>
-                <a class="btn btn-danger btn-sm p-2" asp-action="Delete" asp-route-id="@item.Id">Borrar</a>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
 
-@if(Model.TotalPages > 0)
+@if (Model.TotalPages > 0)
 {
     <ul class="pagination">
-        @if(Model.PageIndex > 1)
+        @if (Model.PageIndex > 1)
         {
             <li class="page-item">
                 <a class="page-link" asp-action="Index"
@@ -85,7 +75,7 @@
                    asp-route-page="@(Model.PageIndex - 1)">Previo</a>
             </li>
         }
-        @if(Model.StartPage > 1)
+        @if (Model.StartPage > 1)
         {
             <li class="page-item">
                 <a class="page-link" asp-action="Index"
@@ -93,14 +83,14 @@
                    asp-route-searchByString="@ViewData["searchByString"]"
                    asp-route-page="1">1</a>
             </li>
-            @if(Model.StartPage > 2)
+            @if (Model.StartPage > 2)
             {
                 <li class="page-item disabled">
                     <span class="page-link">...</span>
                 </li>
             }
         }
-        @for(int i = Model.StartPage; i <= Model.EndPage; i++)
+        @for (int i = Model.StartPage; i <= Model.EndPage; i++)
         {
             <li class="page-item @(i == Model.PageIndex ? "active" : "")">
                 <a class="page-link" asp-action="Index"
@@ -109,9 +99,9 @@
                    asp-route-page="@i">@i</a>
             </li>
         }
-        @if(Model.EndPage < Model.TotalPages)
+        @if (Model.EndPage < Model.TotalPages)
         {
-            @if(Model.EndPage < Model.TotalPages - 1)
+            @if (Model.EndPage < Model.TotalPages - 1)
             {
                 <li class="page-item disabled">
                     <span class="page-link">...</span>
@@ -124,7 +114,7 @@
                    asp-route-page="@Model.TotalPages">@Model.TotalPages</a>
             </li>
         }
-        @if(Model.PageIndex < Model.TotalPages)
+        @if (Model.PageIndex < Model.TotalPages)
         {
             <li class="page-item">
                 <a class="page-link" asp-action="Index"

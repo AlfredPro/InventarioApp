@@ -20,11 +20,55 @@ namespace InventarioApp.Controllers
         }
 
         // GET: Inventory
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchForString, string searchByString, int? page)
         {
-            return _context.InventoryEntry != null ? 
-                          View(await _context.InventoryEntry.ToListAsync()) :
-                          Problem("Entity set 'AppDBContext.InventoryEntry'  is null.");
+            if (_context.InventoryEntry == null)
+            {
+                return Problem("No DBContext found");
+            }
+            if(searchForString == null || searchByString == null)
+            {
+                searchForString = "";
+                searchByString = "";
+            }
+            ViewData["searchForString"] = searchForString;
+            ViewData["searchByString"] = searchByString;
+
+            ViewBag.Options = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Nombre", Value = "Name" },
+                new SelectListItem { Text = "Tipo", Value = "Type" },
+                new SelectListItem { Text = "Descripcion", Value = "Description" },
+                new SelectListItem { Text = "Notas", Value = "Notes" }
+            };
+
+            var entries = from s in _context.InventoryEntry
+                          select s;
+
+            if (!String.IsNullOrEmpty(searchForString))
+            {
+                switch (searchByString)
+                {
+                    case "Name":
+                        entries = entries.Where(s => s.Name.ToLower().Contains(searchForString.ToLower()));
+                        break;
+                    case "Type":
+                        entries = entries.Where(s => s.Type.ToLower().Contains(searchForString.ToLower()));
+                        break;
+                    case "Description":
+                        entries = entries.Where(s => s.Description.ToLower().Contains(searchForString.ToLower()));
+                        break;
+                    case "Notes":   
+                        entries = entries.Where(s => s.Notes.ToLower().Contains(searchForString.ToLower()));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            entries = entries.OrderBy(s => s.Type).ThenBy(s => s.Name);
+            return View(await PaginatedList<InventoryEntry>.CreateAsync(entries.AsNoTracking(), page ?? 1, 10));
+                          
         }
 
         // GET: Inventory/Details/5

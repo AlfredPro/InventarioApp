@@ -21,12 +21,12 @@ namespace InventarioApp.Models
         public required string Type { get; set; }
 
         [DisplayName("Descripción")]
-        public string? Description { get; set; }
+        public required string Description { get; set; }
 
         [DisplayName("Notas")]
-        public string? Notes { get; set; }
+        public required string Notes { get; set; }
 
-        [Range(1, int.MaxValue)]
+        [Range(0, int.MaxValue)]
         [Display(Name = "Cantidad")]
         public required int Quantity { get; set; }
     }

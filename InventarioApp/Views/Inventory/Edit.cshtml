@@ -1,13 +1,13 @@
 ﻿@model InventarioApp.Models.InventoryEntry
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar item";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>InventoryEntry</h4>
+<h4>Objeto</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -39,15 +39,12 @@
                 <input asp-for="Quantity" class="form-control" />
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
-            <div class="form-group py-1">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="form-group py-2">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Volver</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </div>
 
 @section Scripts {

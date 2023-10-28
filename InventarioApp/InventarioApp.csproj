@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\Content\Images\DeleteIcon.jpg" />
+    <None Include="wwwroot\Content\Images\DownloadIcon.jpg" />
+    <None Include="wwwroot\Content\Images\EditIcon.jpg" />
+    <None Include="wwwroot\Content\Images\InfoIcon.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.12" />

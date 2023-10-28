@@ -1,9 +1,11 @@
 ﻿using InventarioApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace InventarioApp.Controllers
 {
+    [Authorize(Roles = "Noob,Worker,MafiaBoss")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

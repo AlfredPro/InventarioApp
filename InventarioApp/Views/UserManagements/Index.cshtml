@@ -40,7 +40,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
@@ -55,12 +55,12 @@
                 @Html.DisplayFor(modelItem => item.Role)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a class="btn btn-primary p-2" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                <a class="btn btn-danger p-2" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
 
-<partial name="_PaginationBar" model="Model.GetPaginatedEntity()" />
+<partial name="_PaginationBar" model="Model" />

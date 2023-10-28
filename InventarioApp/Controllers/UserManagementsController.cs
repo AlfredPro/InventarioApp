@@ -8,16 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using InventarioApp.Areas.Identity.Data;
 using InventarioApp.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventarioApp.Controllers
 {
+    [Authorize(Roles = "MafiaBoss")]
     public class UserManagementsController : Controller
     {
         private readonly AppDBContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public UserManagementsController(AppDBContext context)
+        public UserManagementsController(AppDBContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(string searchForString, string searchByString, int? page)
@@ -84,24 +88,42 @@ namespace InventarioApp.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.Users == null)
+            if (id == null || _context.Users == null || _context.UserRoles == null)
             {
                 return NotFound();
             }
 
-            var userManagement = await _context.Users.FindAsync(id);
-            if (userManagement == null)
+            var useer = await _context.Users.FindAsync(id);
+            if (useer == null)
             {
                 return NotFound();
             }
+
+            var role = (await _userManager.GetRolesAsync(useer)).First() ?? "Noob";
+
+            var userManagement = new UserManagement
+            {
+                Id = useer.Id,
+                FirstName = useer.FirstName,
+                LastName = useer.LastName,
+                Email = useer.Email ?? "",
+                Role = role
+            };
+            ViewData["userRole"] = role;
+            ViewBag.RoleOptions = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Noob", Value = "Noob" },
+                new SelectListItem { Text = "Worker", Value = "Worker" },
+                new SelectListItem { Text = "Mafia Bos", Value = "MafiaBoss" }
+            };
             return View(userManagement);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,FirstName,LastName,Email,RoleId")] UserManagement userManagement)
+        public async Task<IActionResult> Edit(string id, [Bind("Id, Role")] UserManagementEdit userManagementEdit)
         {
-            if (id != userManagement.Id)
+            if (id != userManagementEdit.Id)
             {
                 return NotFound();
             }
@@ -110,12 +132,27 @@ namespace InventarioApp.Controllers
             {
                 try
                 {
-                    _context.Update(userManagement);
+                    var user = await _context.Users.FindAsync(id);
+                    if (user == null)
+                    {
+                        return NotFound();
+                    }
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var result = await _userManager.RemoveFromRolesAsync(user, roles);
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception("Failed to remove existing roles");
+                    }
+                    result = await _userManager.AddToRoleAsync(user, userManagementEdit.Role);
+                    if (!result.Succeeded)
+                    {
+                        throw new Exception("Failed to add new role");
+                    }
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserManagementExists(userManagement.Id))
+                    if (!UserManagementExists(userManagementEdit.Id))
                     {
                         return NotFound();
                     }
@@ -126,23 +163,47 @@ namespace InventarioApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            //Create usermanagement object to pass to view
+            var useer = await _context.Users.FindAsync(id);
+            if (useer == null)
+            {
+                return NotFound();
+            }
+            var role = (await _userManager.GetRolesAsync(useer)).First() ?? "Noob";
+            var userManagement = new UserManagement
+            {
+                Id = useer.Id,
+                FirstName = useer.FirstName,
+                LastName = useer.LastName,
+                Email = useer.Email ?? "",
+                Role = role
+            };
             return View(userManagement);
         }
 
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.Users == null)
+            if (id == null || _context.Users == null || _context.UserRoles == null)
             {
                 return NotFound();
             }
 
-            var userManagement = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (userManagement == null)
+            var useer = await _context.Users.FindAsync(id);
+            if (useer == null)
             {
                 return NotFound();
             }
 
+            var role = (await _userManager.GetRolesAsync(useer)).First() ?? "Noob";
+
+            var userManagement = new UserManagement
+            {
+                Id = useer.Id,
+                FirstName = useer.FirstName,
+                LastName = useer.LastName,
+                Email = useer.Email ?? "",
+                Role = role
+            };
             return View(userManagement);
         }
 
@@ -150,13 +211,20 @@ namespace InventarioApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.Users == null)
+            if (id == null || _context.Users == null || _context.UserRoles == null)
             {
-                return Problem("Entity set 'AppDBContext.UserManagement'  is null.");
+                return NotFound();
             }
             var userManagement = await _context.Users.FindAsync(id);
             if (userManagement != null)
             {
+                //Remove users roles and then user
+                var roles = await _userManager.GetRolesAsync(userManagement);
+                var result = await _userManager.RemoveFromRolesAsync(userManagement, roles);
+                if (!result.Succeeded)
+                {
+                    throw new Exception("Failed to remove existing roles");
+                }
                 _context.Users.Remove(userManagement);
             }
             

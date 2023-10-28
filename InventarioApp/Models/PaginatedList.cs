@@ -2,7 +2,7 @@
 
 namespace InventarioApp.Models
 {
-    public class PaginatedList<T> : List<T>
+    public class PaginatedList<T> : List<T>, IPaginatedEntity
     {
         public int PageIndex { get; private set; }
         public int TotalPages { get; private set; }
@@ -24,18 +24,6 @@ namespace InventarioApp.Models
 
         public bool HasPreviousPage => PageIndex > 1;
         public bool HasNextPage => PageIndex < TotalPages;
-
-        public PaginatedEntity GetPaginatedEntity()
-        {
-            return new PaginatedEntity
-            {
-                PageIndex = PageIndex,
-                TotalPages = TotalPages,
-                PageSpace = PageSpace,
-                StartPage = StartPage,
-                EndPage = EndPage
-            };
-        }
 
         public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize, int pageSpace = 3)
         {

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using InventarioApp.Areas.Identity.Data;
 using InventarioApp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventarioApp.Controllers
 {
+    [Authorize(Roles = "Worker,MafiaBoss")]
     public class InventoryController : Controller
     {
         private readonly AppDBContext _context;
